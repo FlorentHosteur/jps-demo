@@ -1,19 +1,8 @@
 # jps-demo
 JPS Script Demo
 
-<script>
-   (function(d, s, id) {
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) return;
-       js = d.createElement(s); js.id = id;
-       js.async = true;
-       js.src = "//go.jelastic.com/widgets.js";
-       fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'jelastic-jssdk'));
-</script>
-
 <div
-      data-manifest="{link_to_json_file}"
+      data-manifest="https://raw.githubusercontent.com/FlorentHosteur/jps-demo/main/manifest.jps"
       data-width="280"
       data-theme="modern"
       data-lang="en"
