@@ -1,0 +1,72 @@
+type: install
+id: akki_demo
+name: Demo JPS Akki
+logo: https://raw.githubusercontent.com/jelastic-jps/drupal/master/images/Drupal.png
+homepage: https://www.hosteur.com/
+globals:
+  ADMIN_PASS: "${fn.password}"
+  DB_PASS: "${fn.password(6)}"
+  APACHE_PATH: "/var/www/"
+  LOG_FILE: "/install_akkitemplate.log"
+description: Template JPS Demo pour Akki (Hosteur SA).
+settings:
+  fields:
+  - caption: Number of Nodes
+    type: radio-fieldset
+    name: mode
+    default: one
+    values:
+      one: 1 node
+      two: 2 nodes
+      three: 3 nodes
+    showIf:
+      one:
+      - inputType: hidden
+        type: string
+        name: nodes
+        default: 1
+      two:
+      - type: string
+        inputType: hidden
+        name: nodes
+        default: 2
+      three:
+      - type: string
+        inputType: hidden
+        name: nodes
+        default: 3
+  - caption: Cloudlets per Nodes
+    type: spinner
+    name: cldts
+    increment: 2
+    default: 4
+    min: 4
+onInstall:
+- replaceInFile:
+  - replacements:
+    - replacement: zend_extension=/usr/lib64/php/modules/opcache.so
+      pattern: "; zend_extension=/usr/lib64/php/modules/opcache.so"
+    - replacement: mbstring.encoding_translation = Off
+      pattern: mbstring.encoding_translation = On
+    - replacement: extension=gd.so
+      pattern: ".*extension=gd.so"
+    path: "/etc/php.ini"
+    nodeType: apache2
+  deploy:
+    archive: http://app.demo.jelastic.com/HelloWorld.zip
+    name: Hello World
+    context: ROOT
+- restartNodes:
+    nodeGroup: cp
+  user: root
+engine: php7.3
+nodes:
+  nodeType: apache2
+  count : ${settings.nodes}
+  cloudlets: ${settings.cldts}
+  nodeGroup: cp
+success: |
+  Below you will find your admin panel link, username and password.  
+  Admin panel URL: [${env.protocol}://${env.domain}/](${env.protocol}://${env.domain}/)  
+  Admin name: admin  
+  Password: ${globals.ADMIN_PASS}
