@@ -1,16 +1,41 @@
 type: install
 id: akki_demo
 name: Demo JPS Akki
-logo: https://raw.githubusercontent.com/jelastic-jps/drupal/master/images/Drupal.png
+logo: https://cloud.hosteur.network/sign/img/logo--.png
 homepage: https://www.hosteur.com/
 globals:
-  ADMIN_PASS: "${fn.password}"
-  DB_PASS: "${fn.password(6)}"
+  DB_USER: akki-${fn.random}
+  DB_PASS: ${fn.password(10)}
+  DB_HOST: sqldb
   APACHE_PATH: "/var/www/"
   LOG_FILE: "/install_akkitemplate.log"
 description: Template JPS Demo pour Akki (Hosteur SA).
 settings:
   fields:
+    - caption: MySQL Setup
+    type: radio-fieldset
+    name: mode
+    default: one
+    values:
+      one: MariaDB Galera
+      two: MySQL Standalone
+      three: No MySQL
+    showIf:
+      one:
+      - inputType: hidden
+        type: string
+        name: mysql
+        default: 1
+      two:
+      - type: string
+        inputType: hidden
+        name: mysql
+        default: 2
+      three:
+      - type: string
+        inputType: hidden
+        name: mysql
+        default: 3
   - caption: Number of Nodes
     type: radio-fieldset
     name: mode
@@ -42,6 +67,25 @@ settings:
     default: 4
     min: 4
 onInstall:
+  - if (${settings.mysql == 1}):
+    - log: DB Galera Setup
+    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
+      settings:
+        db_user: "${globals.DB_USER}"
+        db_pass: "${globals.DB_PASS}"
+        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+      nodeGroup: sqldb
+  - if (${settings.mysql == 1}):
+    - log: DB Standalone Setup
+    - prepareSqlDatabase:
+      - nodeGroup: sqldb
+        loginCredentials:
+          user: root
+          password: "${nodes.sqldb.password}"
+        newDatabaseName: drupal
+        newDatabaseUser:
+          name: drupal
+          password: "${globals.DB_PASS}"
 - replaceInFile:
   - replacements:
     - replacement: zend_extension=/usr/lib64/php/modules/opcache.so
