@@ -12,14 +12,14 @@ globals:
 description: Template JPS Demo pour Akki (Hosteur SA).
 settings:
   fields:
-    - caption: MySQL Setup
+  - caption: MySQL Setup
     type: radio-fieldset
     name: mode
     default: one
     values:
-      one: MariaDB Galera
-      two: MySQL Standalone
-      three: No MySQL
+    one: MariaDB Galera
+    two: MySQL Standalone
+    three: No MySQL
     showIf:
       one:
       - inputType: hidden
@@ -86,23 +86,23 @@ onInstall:
         newDatabaseUser:
           name: drupal
           password: "${globals.DB_PASS}"
-- replaceInFile:
-  - replacements:
-    - replacement: zend_extension=/usr/lib64/php/modules/opcache.so
-      pattern: "; zend_extension=/usr/lib64/php/modules/opcache.so"
-    - replacement: mbstring.encoding_translation = Off
-      pattern: mbstring.encoding_translation = On
-    - replacement: extension=gd.so
-      pattern: ".*extension=gd.so"
-    path: "/etc/php.ini"
-    nodeType: apache2
-  deploy:
-    archive: http://app.demo.jelastic.com/HelloWorld.zip
-    name: Hello World
-    context: ROOT
-- restartNodes:
+  - replaceInFile:
+    - replacements:
+      - replacement: zend_extension=/usr/lib64/php/modules/opcache.so
+        pattern: "; zend_extension=/usr/lib64/php/modules/opcache.so"
+      - replacement: mbstring.encoding_translation = Off
+        pattern: mbstring.encoding_translation = On
+      - replacement: extension=gd.so
+        pattern: ".*extension=gd.so"
+      path: "/etc/php.ini"
+      nodeType: apache2
+    deploy:
+      archive: http://app.demo.jelastic.com/HelloWorld.zip
+      name: Hello World
+      context: ROOT
+  - restartNodes:
     nodeGroup: cp
-  user: root
+    user: root
 engine: php7.3
 nodes:
   nodeType: apache2
