@@ -12,30 +12,30 @@ globals:
 description: Template JPS Demo pour Akki (Hosteur SA).
 settings:
   fields:
-  - caption: MySQL Setup
-    type: radio-fieldset
-    name: mode
+  - caption: MySQL
+    type: list
+    name: sqlengine
     default: one
     values:
-    one: MariaDB Galera
-    two: MySQL Standalone
-    three: No MySQL
+      one: Galera
+      two: StandAlone
+      three: No MySQL
     showIf:
       one:
       - inputType: hidden
         type: string
-        name: mysql
+        name: msql
         default: 1
       two:
       - type: string
         inputType: hidden
-        name: mysql
+        name: msql
         default: 2
       three:
       - type: string
         inputType: hidden
-        name: mysql
-        default: 3
+        name: msql
+        default: 3  
   - caption: Number of Nodes
     type: radio-fieldset
     name: mode
@@ -73,9 +73,9 @@ onInstall:
       settings:
         db_user: "${globals.DB_USER}"
         db_pass: "${globals.DB_PASS}"
-        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+        custom_conf: "${baseUrl}/configs/sqldb/akki.cnf"
       nodeGroup: sqldb
-  - if (${settings.mysql == 1}):
+  - if (${settings.mysql == 2}):
     - log: DB Standalone Setup
     - prepareSqlDatabase:
       - nodeGroup: sqldb
@@ -84,7 +84,7 @@ onInstall:
           password: "${nodes.sqldb.password}"
         newDatabaseName: drupal
         newDatabaseUser:
-          name: drupal
+          name: akkidb
           password: "${globals.DB_PASS}"
   - replaceInFile:
     - replacements:
